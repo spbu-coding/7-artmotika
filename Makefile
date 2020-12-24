@@ -7,7 +7,7 @@ LDFLAGS =
 
 EXEC = $(BUILD_DIR)/$(NAME)
 SOURCE = $(SOURCE_DIR)/$(NAME).c
-OBJECT = $(EXEC).o
+OBJS = $(EXEC).o
 
 TESTS_IN = $(sort $(wildcard $(TEST_DIR)/*.in))
 TESTS_NAMES = $(TESTS_IN:$(TEST_DIR)/%.in=%)
@@ -16,22 +16,20 @@ SORT_OUT = $(TESTS_OUT:$(TEST_DIR)/%=$(BUILD_DIR)/%)
 TEST_LOG = $(TESTS_OUT:$(TEST_DIR)/%.out=$(BUILD_DIR)/%.log)
 
 .PHONY: clean all check
-.INTERMEDIATE: $(OBJECT) $(SORT_OUT)
-.SECONDARY: $(EXEC) $(TEST_LOG)
 
 all: $(EXEC)
 
-$(OBJECT): $(SOURCE) | $(BUILD_DIR)
+$(OBJS): $(SOURCE) | $(BUILD_DIR)
 	$(CC) -c $(CFLAGS) -o $@ $<
 
-$(EXEC): $(OBJECT)
+$(EXEC): $(OBJS)
 	$(LD) $(LDFLAGS) -o $@ $<
 
 $(BUILD_DIR): $(SOURCE)
 	@mkdir -p $@
 
 clean:
-	$(RM) -r $(BUILD_DIR)/
+	rm -rf $(BUILD_DIR)/
 
 check: $(TEST_LOG)
 	@test_check=0 ; \
